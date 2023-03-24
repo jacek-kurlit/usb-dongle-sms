@@ -1,0 +1,2 @@
+[workspace]
+members = ["sms-api", "terminal-app"]
