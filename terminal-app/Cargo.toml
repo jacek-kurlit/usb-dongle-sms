@@ -2,3 +2,9 @@
 name = "terminal-app"
 version = "0.1.0"
 edition = "2021"
+authors = ["Jacek Kurlit"]
+description = "Terminal application that give access to sms api"
+
+[dependencies]
+clap = { version = "4.1.13", features = ["derive"] }
+anyhow = "1.0.70"
