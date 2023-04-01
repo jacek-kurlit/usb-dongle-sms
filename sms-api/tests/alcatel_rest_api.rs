@@ -1,7 +1,6 @@
-use std::collections::HashMap;
-
 use httpmock::prelude::*;
 use serde_json::json;
+use sms_api::*;
 
 #[test]
 fn should_send_sms_via_alcatel_rest_api() {
@@ -16,7 +15,7 @@ fn should_send_sms_via_alcatel_rest_api() {
         "jsonrpc": "2.0",
         "id": 6.6,
         "method": "SendSMS",
-        "params": {
+        "patrams": {
             "SMSId": -1,
             "SMSContent": message,
             "PhoneNumber": phone_number,
@@ -35,29 +34,14 @@ fn should_send_sms_via_alcatel_rest_api() {
     });
 
     // when
-    let client = reqwest::blocking::Client::new();
+    let sms_api_client = sms_api::create_api_clint(SmsApiConfig::Alcatel {
+        host: format!("http://{mock_address}"),
+    });
 
-    let url = format!("http://{mock_address}/jrd/webapi?api=SendSMS");
-    let resp = client
-        .post(url)
-        .header("Referer", referer_header.to_string())
-        .header("Content-Type", content_type_header)
-        .body(body.to_string())
-        .send()
-        .expect("Mock endpoint should be available")
-        .json::<HashMap<String, String>>()
-        .expect("Resposne should be a JSON");
+    let result = sms_api_client.send_sms(message.to_string(), vec![phone_number.to_string()]);
 
     // then
     endpoint_mock.assert();
     println!("{}", endpoint_mock.hits());
-    assert_eq!(
-        resp.get("id").expect("Id should be present in response"),
-        "6.6"
-    );
-    assert_eq!(
-        resp.get("jsonrpc")
-            .expect("jsonrpc should be present in response"),
-        "2.0"
-    );
+    assert!(result.is_ok());
 }

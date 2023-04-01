@@ -1,15 +1,32 @@
-pub fn send_sms(message: String, receivers: Vec<String>) -> Result<(), Box<dyn std::error::Error>> {
-    println!("Sending {message} to {} receivers", receivers.len());
-    Ok(())
+use std::error::Error;
+
+mod alcatel;
+pub trait SmsApiClient {
+    fn send_sms(&self, message: String, receivers: Vec<String>) -> Result<(), SmsError>;
 }
 
-#[cfg(test)]
-mod tests {
+pub enum SmsApiConfig {
+    Alcatel { host: String },
+}
 
-    use super::*;
+pub fn create_api_clint(config: SmsApiConfig) -> Box<dyn SmsApiClient> {
+    match config {
+        SmsApiConfig::Alcatel { host } => Box::new(crate::alcatel::AlcatelRestApiClient::new(host)),
+    }
+}
 
-    #[test]
-    fn test_send_sms() {
-        send_sms("Hello World".to_string(), vec![]).unwrap();
+#[derive(Debug)]
+pub enum SmsError {
+    ConnectionFailure,
+}
+
+impl Error for SmsError {}
+
+impl std::fmt::Display for SmsError {
+    #[allow(unused_variables)]
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SmsError::ConnectionFailure => write!(f, "Connection failed"),
+        }
     }
 }
