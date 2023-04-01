@@ -7,7 +7,7 @@ fn main() {
 }
 
 #[derive(Parser, Debug)]
-#[command(author = "My Name", about, about, version)]
+#[command(name = "sms", author = "J.Kurlit", about, version)]
 struct Args {
     #[arg(short, long)]
     message: String,
