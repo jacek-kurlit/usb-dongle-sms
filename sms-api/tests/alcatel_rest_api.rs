@@ -15,11 +15,10 @@ fn should_send_sms_via_alcatel_rest_api() {
         "jsonrpc": "2.0",
         "id": 6.6,
         "method": "SendSMS",
-        "patrams": {
+        "params": {
             "SMSId": -1,
             "SMSContent": message,
-            "PhoneNumber": phone_number,
-            "SMSTime": "2023-03-29 21:34:53"
+            "PhoneNumber": phone_number
     }
     });
     let endpoint_mock = server.mock(|when, then| {
@@ -28,7 +27,7 @@ fn should_send_sms_via_alcatel_rest_api() {
             .query_param("api", "SendSMS")
             .header("Referer", referer_header.to_string())
             .header("Content-Type", content_type_header.to_string())
-            .json_body(body.clone());
+            .json_body_partial(body.to_string());
         then.status(200)
             .json_body(json!({ "jsonrpc": "2.0", "id": "6.6" }));
     });

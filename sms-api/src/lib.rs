@@ -1,8 +1,10 @@
+#![feature(result_option_inspect)]
 use std::error::Error;
 
 mod alcatel;
 pub trait SmsApiClient {
     fn send_sms(&self, message: String, receivers: Vec<String>) -> Result<(), SmsError>;
+    fn get_sms_status(&self) -> Result<SmsStatus, SmsError>;
 }
 
 pub enum SmsApiConfig {
@@ -18,6 +20,12 @@ pub fn create_api_clint(config: SmsApiConfig) -> Box<dyn SmsApiClient> {
 #[derive(Debug)]
 pub enum SmsError {
     ConnectionFailure,
+}
+
+pub enum SmsStatus {
+    Success,
+    Failure,
+    Pending,
 }
 
 impl Error for SmsError {}

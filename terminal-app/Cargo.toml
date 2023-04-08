@@ -8,3 +8,4 @@ description = "Terminal application that give access to sms api"
 [dependencies]
 clap = { version = "4.1.13", features = ["derive"] }
 anyhow = "1.0.70"
+sms-api = { path = "../sms-api" }
